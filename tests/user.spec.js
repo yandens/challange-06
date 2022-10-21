@@ -1,6 +1,6 @@
 const request = require('supertest')
 const app = require('../index')
-const token = ''
+let token = ''
 
 describe('user.updateBio.fuction', () => {
   // case if success
@@ -27,6 +27,7 @@ describe('user.delete.fuction', () => {
   // case if success
   test('res.status called with 200', async () => {
     try {
+      const data = token.data
       const res = await request(app).delete('/user/delete').set('Authorization', token)
       expect(res.statusCode).toBe(200)
       expect(res.body).toHaveProperty('status')
@@ -34,7 +35,7 @@ describe('user.delete.fuction', () => {
       expect(res.body).toHaveProperty('data')
       expect(res.body.status).toBe(true)
       expect(res.body.message).toBe('success delete user')
-      expect(res.body.data).toStrictEqual({ token })
+      expect(res.body.data).toStrictEqual({ data })
     } catch (err) {
       console.log(err)
     }

@@ -1,6 +1,6 @@
 const request = require('supertest')
 const app = require('../index')
-const token = ''
+let token = ''
 
 describe('auth.register.function', () => {
   // case if success
@@ -76,7 +76,7 @@ describe('auth.changePass.function', () => {
       expect(res.body).toHaveProperty('data')
       expect(res.body.status).toBe(true)
       expect(res.body.message).toBe('success change password')
-      expect(res.body.data).toStrictEqual({ id: token.id, username: token.username })
+      expect(res.body.data).toStrictEqual({ id: token.data.id, username: token.data.username })
     } catch (err) {
       console.log(err)
     }
