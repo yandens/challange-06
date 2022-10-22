@@ -17,7 +17,7 @@ const updateBio = async (req, res, next) => {
 
     return res.status(201).json({
       status: true,
-      message: 'succes update user biodata',
+      message: 'success update user biodata',
       data: {
         username,
         name,

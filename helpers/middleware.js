@@ -8,7 +8,8 @@ const mustLogin = (req, res, next) => {
     if (!token) {
       res.status(401).json({
         status: false,
-        message: 'u must login first'
+        message: 'u re not authorized!',
+        data: null
       })
     }
 
@@ -20,7 +21,8 @@ const mustLogin = (req, res, next) => {
     if (err.message == 'jwt malformed') {
       res.status(401).json({
         status: false,
-        message: err.message
+        message: 'u re not authorized!',
+        data: null
       })
     }
 

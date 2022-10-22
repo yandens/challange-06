@@ -10,9 +10,10 @@ const register = async (req, res, next) => {
     const existUser = await User.findOne({ where: { username } })
 
     if (existUser) {
-      return res.status(500).json({
+      return res.status(400).json({
         status: false,
-        message: 'username already exits'
+        message: 'username already exist',
+        data: null
       })
     }
 
@@ -55,7 +56,8 @@ const login = async (req, res, next) => {
     if (!findUser || !correct) {
       return res.status(404).json({
         status: false,
-        message: 'username or password not correct'
+        message: 'username or password not correct',
+        data: null
       })
     }
 
@@ -70,7 +72,6 @@ const login = async (req, res, next) => {
     // JWT_KEY
     const payload = {
       id: findUser.id,
-      username: findUser.username
     }
     const token = jwt.sign(payload, JWT_KEY)
 
@@ -91,6 +92,7 @@ const login = async (req, res, next) => {
     next(err)
   }
 }
+
 
 const logout = async (req, res, next) => {
   try {
@@ -126,7 +128,8 @@ const changePass = async (req, res, next) => {
     if (!correct || newPass !== confirmNewPass) {
       return res.status(401).json({
         status: false,
-        message: 'password not match'
+        message: 'password not match',
+        data: null
       })
     }
 
@@ -148,8 +151,7 @@ const changePass = async (req, res, next) => {
       status: true,
       message: 'success change password',
       data: {
-        id: user.id,
-        username: user.username
+        id: user.id
       }
     })
   } catch (err) {

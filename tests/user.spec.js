@@ -1,43 +1,73 @@
 const request = require('supertest')
 const app = require('../index')
-let token = ''
+const truncate = require('../helpers/truncate')
+const jwt = require('jsonwebtoken')
+const { JWT_KEY } = process.env
 
-describe('user.updateBio.fuction', () => {
-  // case if success
-  test('res.status called with 201', async () => {
-    try {
-      const data = ['deden123', 'deden', 'deden@gmail.com', '085456258456']
-      const { username, name, email, phone } = data
+const userTest = {
+  name: 'deden',
+  username: 'deden',
+  password: 'deden',
+  email: 'deden123@gmail.com',
+  phone: '085123456852'
+}
 
-      const res = await request(app).put('/user/update').set('Authorization', token).send({ username, name, email, phone })
-      expect(res.statusCode).toBe(201)
-      expect(res.body).toHaveProperty('status')
-      expect(res.body).toHaveProperty('message')
-      expect(res.body).toHaveProperty('data')
-      expect(res.body.status).toBe(true)
-      expect(res.body.message).toBe('success update user biodata')
-      expect(res.body.data).toStrictEqual({ username, name, email, phone })
-    } catch (err) {
-      console.log(err)
-    }
+const payload = {
+  id: 1,
+}
+
+const testToken = jwt.sign(payload, JWT_KEY)
+let token = testToken
+
+const haveProperty = (res) => {
+  expect(res.body).toHaveProperty('status')
+  expect(res.body).toHaveProperty('message')
+  expect(res.body).toHaveProperty('data')
+}
+
+const successRes = (res, code, status, message, data) => {
+  expect(res.statusCode).toBe(code)
+  expect(res.body.status).toBe(status)
+  expect(res.body.message).toBe(message)
+  expect(res.body.data).toStrictEqual(data)
+}
+
+const failedRes = (res, code, status, message, data) => {
+  expect(res.statusCode).toBe(code)
+  expect(res.body.status).toBe(status)
+  expect(res.body.message).toBe(message)
+}
+
+truncate.user()
+truncate.userBiodata()
+truncate.userHistory()
+
+describe('/user/update endpoint', () => {
+  // update success
+  test('update success', async () => {
+    const res = await request(app).put('/user/update')
+      .set('Authorization', token)
+      .send(userTest)
+
+    haveProperty(res)
+    successRes(res, 201, true, 'success update user biodata', {
+      username: userTest.username,
+      name: userTest.name,
+      email: userTest.email,
+      phone: userTest.phone
+    })
   })
 })
 
-describe('user.delete.fuction', () => {
-  // case if success
-  test('res.status called with 200', async () => {
-    try {
-      const data = token.data
-      const res = await request(app).delete('/user/delete').set('Authorization', token)
-      expect(res.statusCode).toBe(200)
-      expect(res.body).toHaveProperty('status')
-      expect(res.body).toHaveProperty('message')
-      expect(res.body).toHaveProperty('data')
-      expect(res.body.status).toBe(true)
-      expect(res.body.message).toBe('success delete user')
-      expect(res.body.data).toStrictEqual({ data })
-    } catch (err) {
-      console.log(err)
-    }
+describe('/user/delete endpoint', () => {
+  // delete success
+  test('delete success', async () => {
+    const res = await request(app).delete('/user/delete')
+      .set('Authorization', token)
+
+    const decode = jwt.verify(token, JWT_KEY)
+    const user = decode
+    haveProperty(res)
+    successRes(res, 200, true, 'success delete user', user)
   })
 })
